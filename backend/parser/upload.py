@@ -35,13 +35,13 @@ def upload_pdf():
         pdf_bytes = file.read()
         filename = secure_filename(file.filename)
 
-        # ✅ Check if the file is a valid PDF before saving
+        # Check if the file is a valid PDF before saving
         try:
             fitz.open(stream=pdf_bytes, filetype='pdf')
         except Exception:
             return jsonify({"error": "Invalid or corrupted PDF file."}), 400
 
-        # ✅ Save the file metadata to DB
+        # Save the file metadata to DB
         new_doc = PdfDocument(
             filename=filename,
             content=pdf_bytes,
@@ -49,7 +49,7 @@ def upload_pdf():
         db.session.add(new_doc)
         db.session.flush()
 
-        # ✅ Extract and save transactions
+        # Extract and save transactions
         transactions_data = extract_transactions(pdf_bytes, password)
         for txn in transactions_data:
             db.session.add(Transaction(
@@ -63,7 +63,7 @@ def upload_pdf():
                 balance=txn['balance']
             ))
 
-        # ✅ Extract and save summaries and metadata
+        # Extract and save summaries and metadata
         generate_and_save_summary(new_doc.id)
         generate_and_save_received_summary(new_doc.id)
         extract_metadata(new_doc.id, pdf_bytes, password)
@@ -71,7 +71,7 @@ def upload_pdf():
 
         db.session.commit()
 
-        # ✅ Fetch summaries for response
+        # Fetch summaries for response
         spending = SpendingSummary.query.filter_by(pdf_id=new_doc.id).all()
         receiving = ReceivedSummary.query.filter_by(pdf_id=new_doc.id).all()
         summary_rows = TotalSummary.query.filter_by(pdf_id=new_doc.id).all()
@@ -88,14 +88,14 @@ def upload_pdf():
         ]
 
         return jsonify({
-            "id": new_doc.id,
-            "filename": new_doc.filename,
-            "uploaded_at": new_doc.uploaded_at.isoformat(),
+            # "id": new_doc.id,
+            # "filename": new_doc.filename,
+            # "uploaded_at": new_doc.uploaded_at.isoformat(),
             "success": "Uploaded and analyzed successfully",
-            "transactions": transactions_data,
-            "spending_summary": spending_summary,
-            "received_summary": received_summary,
-            "total_summary": total_summary
+            # "transactions": transactions_data,
+            # "spending_summary": spending_summary,
+            # "received_summary": received_summary,
+            # "total_summary": total_summary
         }), 201
 
     except Exception as e:
