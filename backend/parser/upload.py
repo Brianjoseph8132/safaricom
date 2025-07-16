@@ -92,7 +92,7 @@ def upload_pdf():
             # "id": new_doc.id,
             # "filename": new_doc.filename,
             # "uploaded_at": new_doc.uploaded_at.isoformat(),
-            "success": "Uploaded and analyzed successfully", 200
+            "success": "Uploaded and analyzed successfully"
             # "transactions": transactions_data,
             # "spending_summary": spending_summary,
             # "received_summary": received_summary,
